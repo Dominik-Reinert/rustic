@@ -1,18 +1,19 @@
 use std::fs;
 use regex::Regex;
+use std::vec::Vec;
+
+#[derive(Debug)]
+struct FileToImport (String, Vec<String>);
 
 fn main() {
     let file_path = "test-data/hello-world.ts";
-    let _import_regex = Regex::new(r"import.*").unwrap();
     let data = fs::read_to_string(file_path).expect("unable to read file");
-
-
-    println!("{}", &data);
-    println!("");
-
     let re = Regex::new(r#"from (?<import>[-'"./A-Za-z0-9]+)"#).unwrap();
-    
+
+    let mut imports: Vec<String> = Vec::new();
     for capture in re.captures_iter(&data) {
-        println!("{}", &capture["import"]);
+        imports.push(String::from(&capture["import"]));
     }
+    let fti = FileToImport(file_path.to_string(), imports);
+    println!("{:?}", fti);
 }
